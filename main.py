@@ -22,6 +22,13 @@ def main():
         "content": "Why is Boot.dev such a great place to learn backend development? Use one paragraph maximum.",
     }
     ])
+
+    if response.usage:
+        print(f"Prompt tokens: {response.usage.prompt_tokens}")
+        print(f"Response tokens: {response.usage.completion_tokens}")
+    else:
+        raise RuntimeError("No usage information returned in the response.")
+
     print(response.choices[0].message.content)
 if __name__ == "__main__":
     main()
