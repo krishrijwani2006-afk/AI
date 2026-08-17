@@ -21,12 +21,15 @@ def main():
         base_url="https://openrouter.ai/api/v1",
         api_key=api_key,
     )
-    response = client.chat.completions.create(model="openrouter/free", messages = [
-    {
-        "role": "user",
-        "content": args.user_prompt,
-    }
-    ])
+
+    messages = [
+    {"role": "user", "content": args.user_prompt},
+]
+
+    response = client.chat.completions.create(
+    model="openrouter/free",
+    messages=messages,
+)
 
     if response.usage:
         print(f"Prompt tokens: {response.usage.prompt_tokens}")
