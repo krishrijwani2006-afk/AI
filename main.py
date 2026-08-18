@@ -1,5 +1,6 @@
 import os
 import argparse
+from prompts import system_prompt
 def main():
     print("Hello from ai!")
 
@@ -21,15 +22,18 @@ def main():
     client = OpenAI(
         base_url="https://openrouter.ai/api/v1",
         api_key=api_key,
+        
     )
 
     messages = [
+    {"role": "system", "content": system_prompt},
     {"role": "user", "content": args.user_prompt},
 ]
 
     response = client.chat.completions.create(
     model="openrouter/free",
     messages=messages,
+    temperature = 0,
 )
     if args.verbose:
         if response.usage:
