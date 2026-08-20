@@ -1,7 +1,7 @@
 import os
 import argparse
 from prompts import system_prompt
-from call_function import available_functions
+from call_function import *
 import json
 
 def main():
@@ -38,19 +38,22 @@ def main():
     messages=messages,
     tools=available_functions,
 )
-    if args.verbose:
-        if response.usage:
-            print(f"User prompt: {args.user_prompt}")
-            print(f"Prompt tokens: {response.usage.prompt_tokens}")
-            print(f"Response tokens: {response.usage.completion_tokens}")
-        else:
-            raise RuntimeError("No usage information returned in the response.")
 
     message = response.choices[0].message
     for tool_call in message.tool_calls:
-        function_args = json.loads(tool_call.function.arguments or "{}")
-        print(f"Calling function: {tool_call.function.name}({function_args})")
+        result_message = call_function(tool_call)
+
         if not tool_call.function:
             print(response.choices[0].message.content)
+
+    if args.verbose:
+            if response.usage:
+                print(f"User prompt: {args.user_prompt}")
+                print(f"Prompt tokens: {response.usage.prompt_tokens}")
+                print(f"Response tokens: {response.usage.completion_tokens}")
+                print(f"-> {result_message['content']}")
+            else:
+                raise RuntimeError("No usage information returned in the response.")
+            
 if __name__ == "__main__":
     main()
