@@ -1,6 +1,9 @@
 import os
 import argparse
 from prompts import system_prompt
+from call_function import available_functions
+import json
+
 def main():
     print("Hello from ai!")
 
@@ -34,6 +37,7 @@ def main():
     model="openrouter/free",
     messages=messages,
     temperature = 0,
+    tools=available_functions,
 )
     if args.verbose:
         if response.usage:
@@ -43,6 +47,11 @@ def main():
         else:
             raise RuntimeError("No usage information returned in the response.")
 
-    print(response.choices[0].message.content)
+    message = response.choices[0].message
+    for tool_call in message.tool_calls:
+        function_args = json.loads(tool_call.function.arguments or "{}")
+        print(f"Calling function: {tool_call.function.name}({function_args})")
+        if not tool_call.function:
+            print(response.choices[0].message.content)
 if __name__ == "__main__":
     main()
