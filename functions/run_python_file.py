@@ -52,7 +52,8 @@ schema_run_python_file = {
                     },
                     "description": "Optional command-line arguments to pass to the Python file"
                 }
-            }
+            },
+            "required": ["file_path", "args"]
         }
     }
 }

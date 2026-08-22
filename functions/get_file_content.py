@@ -36,7 +36,8 @@ schema_get_file_content = {
                     "type": "string",
                     "description": "File path to read content from, relative to the working directory"
                 }
-            }
+            },
+            "required": ["file_path"]
         }
     }
 }

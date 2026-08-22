@@ -39,6 +39,7 @@ schema_get_files_info = {
                     "description": "Directory path to list files from, relative to the working directory (default is the working directory itself)",
                 },
             },
+            "required": ["directory"]
         },
     },
 }
