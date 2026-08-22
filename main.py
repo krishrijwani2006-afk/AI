@@ -3,6 +3,7 @@ import argparse
 from prompts import system_prompt
 from call_function import *
 import json
+import sys
 
 def main():
     print("Hello from ai!")
@@ -27,33 +28,41 @@ def main():
         api_key=api_key,
         
     )
-
     messages = [
-    {"role": "system", "content": system_prompt},
-    {"role": "user", "content": args.user_prompt},
-]
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": args.user_prompt},
+    ]
 
-    response = client.chat.completions.create(
-    model="openrouter/free",
-    messages=messages,
-    tools=available_functions,
-)
+    for _ in range(20):
+        response = client.chat.completions.create(
+        model="openrouter/free",
+        messages=messages,
+        tools=available_functions,
+    )
 
-    message = response.choices[0].message
-    for tool_call in message.tool_calls:
-        result_message = call_function(tool_call)
+        message = response.choices[0].message
+        messages.append(message)
 
-        if not tool_call.function:
-            print(response.choices[0].message.content)
-
-    if args.verbose:
+        if args.verbose:
             if response.usage:
                 print(f"User prompt: {args.user_prompt}")
                 print(f"Prompt tokens: {response.usage.prompt_tokens}")
                 print(f"Response tokens: {response.usage.completion_tokens}")
-                print(f"-> {result_message['content']}")
-            else:
-                raise RuntimeError("No usage information returned in the response.")
+        
+
+        if message.tool_calls:
+            for tool_call in message.tool_calls:
+                result_message = call_function(tool_call, verbose=args.verbose)
+                messages.append(result_message)
+
+        else:
+            print(message.content)
+        
+            return
+
+    sys.exit(1)
+        
+    
             
 if __name__ == "__main__":
     main()
